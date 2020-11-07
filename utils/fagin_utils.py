@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import random
 
 from collections import Counter
 
@@ -21,18 +23,27 @@ def count_by_dict(lists, count_map, cur_top_k, n_k):
 
 
 def count_by_arr(lists, count_arr, cur_top_k, n_k):
-    n_list = len(lists)
+    #problem with n_list
+    n_list = len(lists) - 1 # We remove list from server
     n_item = lists[0].shape[0]
-    #print("number of list = {}, number of items = {}".format(n_list, n_item))
+
+    #print("number of list n_list = {}, number of items n_item = {}".format(n_list, n_item))
     for i in range(n_item):
-        for j in range(n_list):
+        for j in range(1,n_list+1): # we start at one so we do not take into consideration list from rank 0
+                                    # Also we go to n+1 since we need to check last list
+            #Problem here, if we keep encrypted ind, it will be difficult to compare
             nid = lists[j][i]
+            #We try to access a value by passing an encrypted valie
             cur_count = count_arr[nid]
+            #print("for nid: {} we have count: {}".format(nid,cur_count))
             if cur_count == n_list - 1:
                 cur_top_k.append(nid)
                 if len(cur_top_k) == n_k:
                     return
             else:
+                # Even with Dict we cannot to that because encryption is not bijective
+                #ATTENTION: we need to know ID in order to increase count
+                # But to clients we will only send top-k ids and no more. Can it work?
                 count_arr[nid] = cur_count + 1
     return
 
@@ -75,6 +86,22 @@ def count_by_arr_kmeans(lists, count_arr, cur_top_k, n_k):
                     count_arr[nid] = cur_count + 1
     return
 
+def createLookUpTable(ind):
+    random.seed(42)
+    dataSize = len(ind)
+    shuffled = random.sample(ind, dataSize)
+    index = pd.Series(shuffled)
+    lookUpTable = pd.DataFrame(data=ind, index=index, columns = ['ind'])
+    #print(lookUpTable)
+    return lookUpTable
+
+def get_shuffled_ind(ind, lookUpTable):
+    shuffled_ind = list(map(lambda x: lookUpTable.index[lookUpTable['ind'] == x].values[0], ind))
+    return np.array(shuffled_ind)
+
+def get_real_ind(shuffled, lookUpTable):
+    real_ind = list(map(lambda x: lookUpTable.at[x,'ind'], shuffled))
+    return real_ind
 
 def count_lists3(lists):
     flat_lists = np.asarray(lists).flat
@@ -89,3 +116,9 @@ def suggest_size(n_data, k, n_list):
 if __name__ == "__main__":
     arr = np.asarray([1,2,3,4,5])
     print(np.where(arr == 1))
+    """
+    shufled data -> 1,2,3,4,5,6,7,8,9,10
+    not shuffled -> 0
+    
+    we apply counts only to shuffled data
+    """

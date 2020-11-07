@@ -30,26 +30,49 @@ def run(args):
     device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+    # Our data goes from 0_10 to 9_10, so we should expect that the last machine will try to read 10_10
 
-    file_name = "{}/{}_{}".format(args.root, args.rank, args.world_size)
-    print("read file {}".format(file_name))
+    print("rank = {}, world size = {}".format(args.rank, args.world_size))
+    if args.rank < args.world_size-1:
+        file_name = "{}/{}_{}".format(args.root, args.rank, args.world_size-1)
+        print("read file {}".format(file_name))
 
-    load_start = time.time()
-    data, targets = load_higgs_part_with_label(file_name)
-    print("load data part cost {} s".format(time.time()-load_start))
-    n_data = len(data)
-    print("number of data = {}".format(n_data))
+        load_start = time.time()
+        data, targets = load_higgs_part_with_label(file_name)
+        print("load data part cost {} s".format(time.time()-load_start))
+        n_data = len(data)
+        print("number of data = {}".format(n_data))
 
-    # shuffle the data to split train data and test data
-    shuffle_ind = np.arange(n_data)
-    np.random.shuffle(shuffle_ind)
-    print("test data indices: {}".format(shuffle_ind[:args.n_test]))
-    data = data[shuffle_ind]
-    targets = targets[shuffle_ind]
-    train_dataset = data[args.n_test:]
-    test_dataset = data[:args.n_test]
-    train_targets = targets[args.n_test:]
-    test_targets = targets[:args.n_test]
+        # shuffle the data to split train data and test data
+        shuffle_ind = np.arange(n_data)
+        np.random.shuffle(shuffle_ind)
+        print("test data indices: {}".format(shuffle_ind[:args.n_test]))
+        data = data[shuffle_ind]
+        targets = targets[shuffle_ind]
+        train_dataset = data[args.n_test:]
+        test_dataset = data[:args.n_test]
+        train_targets = targets[args.n_test:]
+        test_targets = targets[:args.n_test]
+    else:
+        file_name = "{}/{}_{}".format(args.root, 0, args.world_size-1)
+        print("read file {}".format(file_name))
+
+        load_start = time.time()
+        data, targets = load_higgs_part_with_label(file_name)
+        print("load data part cost {} s".format(time.time() - load_start))
+        n_data = len(data)
+        print("number of data = {}".format(n_data))
+
+        # shuffle the data to split train data and test data
+        shuffle_ind = np.arange(n_data)
+        np.random.shuffle(shuffle_ind)
+        print("test data indices: {}".format(shuffle_ind[:args.n_test]))
+        data = data[shuffle_ind]
+        targets = targets[shuffle_ind]
+        train_dataset = data[args.n_test:]
+        test_dataset = data[:args.n_test]
+        train_targets = targets[args.n_test:]
+        test_targets = targets[:args.n_test]
 
     trainer = FaginArrTrainer(args, train_dataset, train_targets)
 

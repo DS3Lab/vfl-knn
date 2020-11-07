@@ -12,6 +12,7 @@ import math
 # See why sometimes one client takes way longer to receive response
 # see why extraction of sum takes longer than extraction on clients side -> maybe it's bcs we use np array
 
+# Faggins call : python3 server.py 2 2 8999 10
 class Server(data_pb2_grpc.safeTransmissionServicer):
     # Server should be able to also transfer data on it or just work as server
     # --> can be server and client at same time or just server
@@ -223,14 +224,16 @@ def broadcast(addr, numClients, public_key, serverData, splitSize, expExch):
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    size = 6000
-    splitSize = 2000
+    args = sys.argv[1:]
+    print(args)
+    size = int(args[0])
+    splitSize = int(args[1])
     expExch = math.ceil(size/splitSize)
-    addr = 'localhost:8890'
-    numClients = 5
+    addr = 'bach08.ethz.ch:'+args[2]
+    numClients = int(args[3])
     # In order to keep this key static every time we run this scrip, we set cst values
     n = 17800808502650258601875550958844515471709553355942844427678646632260820003199045314388404911994371628035329514822432294991493010990668660709752669595319311588926604853146533480048467772777445948194921231741018143470691643994153991869049452806017700509483577279858687223679450266912590905234105035466324132288032205654668616576048089785291612076679452672446088686439614576640913512366651332202016430324832498990806535377063538455898743073536813616879452457083048955093965336592637835994478510756622055811364251581599289127031126978248323101428581989623586684860664966965029305250191840964067180439265318568513663821573
     public_key = paillier.PaillierPublicKey(n=n)
-    serverData = np.random.rand(1, size)[0]
+    serverData = []#np.random.rand(1, size)[0]
     broadcast(addr, numClients, public_key, serverData, splitSize, expExch)
 
