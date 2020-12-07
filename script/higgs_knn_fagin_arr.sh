@@ -2,7 +2,7 @@
 # 10 machines
 # ./higgs_knn_fagin_arr.sh 10 28 2 10 10 /bigdata/dataset/higgs-vertical/ 172.31.38.0:24000 t2.medium-10
 # ./higgs_knn_fagin_arr.sh 10 10 28 2 2 ../../data/ bach08.ethz.ch:8898 bach
-
+#TODO clean + same in CLUSTER
 world_size=$1
 n_features=$2
 n_classes=$3
@@ -15,7 +15,7 @@ rank=1
 
 home_path="/mnt/scratch/ldiego"
 env_path="/mnt/scratch/ldiego/tutorial-env/bin/activate"
-code_path="${home_path}/vfl-knn-master/script/"
+code_path="${home_path}/vfl-knn/script/"
 
 machines=( 08 02 03 04 06 07 09 10 11 12 13 )
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+#TODO clean + this on is the same in CLUSTER DONE
 # 10 machines
 # ./higgs_knn_allreduce.sh 10 28 2 10 10 /bigdata/dataset/higgs-vertical/ 172.31.38.0:24000 t2.medium-10
 #./higgs_knn_allreduce.sh 10 10 28 2 10 ../../data/ 10.111.1.18:24000 bach
@@ -16,7 +17,7 @@ rank=1
 
 home_path="/mnt/scratch/ldiego"
 env_path="/mnt/scratch/ldiego/tutorial-env/bin/activate"
-code_path="${home_path}/vfl-knn-master/script/"
+code_path="${home_path}/vfl-knn/script/"
 
 machines=( 08 02 03 04 06 07 09 10 11 12 )
 

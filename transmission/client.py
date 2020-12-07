@@ -1,13 +1,11 @@
-
 from transmission import data_pb2, data_pb2_grpc
-import sys, grpc
+import  grpc
 from phe import paillier
 import time
-from utils.encr_utils import encryptor, decryptor
+from transmission.encryption import decryptor
 import numpy as np
 
-#/mnt/scratch/ldiego/vfl-knn-master
-
+#TODO: clean same in cluster DONE
 class Client:
 
     def __init__(self, serverAddr, public_key, private_key):
@@ -30,7 +28,7 @@ class Client:
         print(split[:5])
 
         encrS = time.time()
-        encrData = encryptor(split, self.public_key)
+        encrData = split
         encrE = time.time() - encrS
         self.encrTimes.append(encrE)
         print("Encryption took {} seconds".format(encrE))
@@ -97,15 +95,15 @@ class Client:
         count = 0
         transmS = time.time()
 
-        for split in splitData:
-            exchS=time.time()
-            count = count + 1
-            with grpc.insecure_channel(self.addr, options=options) as channel:
+        with grpc.insecure_channel(self.addr, options=options) as channel:
+            for split in splitData:
+                exchS = time.time()
+                count = count + 1
                 stub = data_pb2_grpc.safeTransmissionStub(channel)
                 received = self.__exchange_data(stub,split)
-            globData.extend(received)
-            exchE = time.time() - exchS
-            print("Exchange {} took {} seconds".format(count, exchE))
+                globData.extend(received)
+                exchE = time.time() - exchS
+                print("Exchange {} took {} seconds".format(count, exchE))
         transmE = time.time() - transmS
         print("Transmission of {} messages took {} seconds".format(count, transmE))
         print(globData[:5])
@@ -126,5 +124,3 @@ if __name__ == '__main__':
     clientData = np.random.rand(1, size)[0]
     client = Client(serverAddr, public_key, private_key)
     client.transmit(clientData, splitSize, options)
-
-# daredevil1205!

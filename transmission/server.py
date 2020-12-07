@@ -1,18 +1,14 @@
 import time
 import grpc
-from transmission import data_pb2, data_pb2_grpc
+import data_pb2, data_pb2_grpc
 import numpy as np
-from utils.encr_utils import encryptor, decryptor
+from encryption import encryptor
 from phe import paillier
 from statistics import mean
 from concurrent import futures
-import math
-
-#TODO
-# See why sometimes one client takes way longer to receive response
-# see why extraction of sum takes longer than extraction on clients side -> maybe it's bcs we use np array
-
-# Faggins call : python3 server.py 2 2 8999 10
+import math, sys
+from multiprocessing import Pool
+#TODO: same in cluster, even though not used
 class Server(data_pb2_grpc.safeTransmissionServicer):
     # Server should be able to also transfer data on it or just work as server
     # --> can be server and client at same time or just server
@@ -98,6 +94,12 @@ class Server(data_pb2_grpc.safeTransmissionServicer):
         self.waitTimes = []
         self.sumWaitTimes = []
 
+    def extractCip(self, data):
+        return list(map(lambda c: str(c.ciphertext()), data))
+
+    def extractExp(self, data):
+        return list(map(lambda c: str(c.exponent), data))
+
     def exchangeData(self, request, context):
 
         print("----Starting exchange----")
@@ -172,8 +174,13 @@ class Server(data_pb2_grpc.safeTransmissionServicer):
         if self.extract:
             self.extract = False
             extrS = time.time()
-            self.extrCip = list(map(lambda c: str(c.ciphertext()), self.sumData))
-            self.extrExp = list(map(lambda c: str(c.exponent), self.sumData))
+            print(len(self.sumData))
+
+            with Pool() as pool:
+                self.extrCip = pool.map(self.extractCip, [self.sumData])[0]
+                self.extrExp = pool.map(self.extractExp, [self.sumData])[0]
+
+
             self.extractCompleted = True
             extrE = time.time() - extrS
             self.extrTimes.append(extrE)
