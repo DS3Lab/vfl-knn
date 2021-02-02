@@ -29,8 +29,10 @@ code_path="${home_path}/transmission_framework/"
 env_path="/mnt/scratch/ldiego/tutorial-env/bin/activate"
 
 machines=( 13 14 15 16 )
+#machines=( 06 03 07 08 )
 ports=( 8991 8992 8993 8994 )
 cluster_name="bach"
+#cluster_name="euler"
 server_count=0
 for port in "${ports[@]}"; do
   for i in "${machines[@]}"; do

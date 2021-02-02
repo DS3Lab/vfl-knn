@@ -25,7 +25,7 @@ class Client:
         # This method will take care of senidn one message to server
         # and receiving it's response
         print("----client_exchangeData----")
-        print(split[:5])
+        #print(split[:5])
 
         encrS = time.time()
         encrData = split
@@ -106,7 +106,7 @@ class Client:
                 print("Exchange {} took {} seconds".format(count, exchE))
         transmE = time.time() - transmS
         print("Transmission of {} messages took {} seconds".format(count, transmE))
-        print(globData[:5])
+        #print(globData[:5])
         return globData
 
 

@@ -85,8 +85,8 @@ def count_by_arr_kmeans(lists, count_arr, cur_top_k, n_k):
                     count_arr[nid] = cur_count + 1
     return
 
-def createLookUpTable(dataSize):
-    random.seed(42)
+def createLookUpTable(dataSize, seed):
+    random.seed(seed)
     return np.array(random.sample(range(dataSize), dataSize))
 
 def get_shuffled_ind(ind, lookUpTable):
