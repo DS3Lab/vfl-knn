@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import random
 
 from collections import Counter
@@ -103,22 +102,19 @@ def count_by_arr_kmeans(lists, count_arr, cur_top_k, n_k):
                     count_arr[nid] = cur_count + 1
     return
 
-def createLookUpTable(ind):
-    random.seed(42)
-    dataSize = len(ind)
-    shuffled = random.sample(ind, dataSize)
-    index = pd.Series(shuffled)
-    lookUpTable = pd.DataFrame(data=ind, index=index, columns = ['ind'])
-    #print(lookUpTable)
-    return lookUpTable
+def createLookUpTable(dataSize, seed):
+    random.seed(seed)
+    return np.array(random.sample(range(dataSize), dataSize))
 
 def get_shuffled_ind(ind, lookUpTable):
-    shuffled_ind = list(map(lambda x: lookUpTable.index[lookUpTable['ind'] == x].values[0], ind))
-    return np.array(shuffled_ind)
+    return np.array(lookUpTable[ind])
 
+def find(target, myList):
+    for i in range(len(myList)):
+        if myList[i] == target:
+            return i
 def get_real_ind(shuffled, lookUpTable):
-    real_ind = list(map(lambda x: lookUpTable.at[x,'ind'], shuffled))
-    return real_ind
+    return list(map(lambda x: find(x, lookUpTable), shuffled))
 
 def count_lists3(lists):
     flat_lists = np.asarray(lists).flat
@@ -133,9 +129,3 @@ def suggest_size(n_data, k, n_list):
 if __name__ == "__main__":
     arr = np.asarray([1,2,3,4,5])
     print(np.where(arr == 1))
-    """
-    shufled data -> 1,2,3,4,5,6,7,8,9,10
-    not shuffled -> 0
-    
-    we apply counts only to shuffled data
-    """
