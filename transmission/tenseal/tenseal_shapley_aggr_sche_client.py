@@ -8,7 +8,7 @@ import sys
 from . import tenseal_shapley_data_pb2_grpc, tenseal_shapley_data_pb2
 
 
-class ShapleyScheduleClient:
+class ShapleyAggrScheClient:
 
     def __init__(self, server_address, args):
         self.server_address = server_address

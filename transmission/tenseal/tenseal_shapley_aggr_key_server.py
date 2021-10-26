@@ -1,5 +1,6 @@
 import time
 from concurrent import futures
+from multiprocessing import Process, Queue
 
 import numpy as np
 import grpc
@@ -13,7 +14,7 @@ from utils.shapley_utils import generate_all_combinations, sum_all_combinations
 from transmission.tenseal.tenseal_key_server_client import KeyServerClient
 
 
-class ShapleyScheduleServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer):
+class ShapleyAggrKeyServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer):
 
     def __init__(self, address, key_address, num_clients, k, ctx_file):
         self.address = address
@@ -21,6 +22,7 @@ class ShapleyScheduleServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
         self.num_clients = num_clients
 
         self.key_server_client = KeyServerClient(self.key_address, k, ctx_file)
+        self.client_threads = 4
         self.k = k
 
         context_bytes = open(ctx_file, "rb").read()
@@ -46,7 +48,42 @@ class ShapleyScheduleServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
         self.n_sum_request = 0
         self.n_sum_response = 0
         self.sum_completed = False
-        self.group_top_k = []
+        self.group_top_k = {}
+
+    def transmit(self, q, i, group_key):
+        print("send to key server: address: {}, group index {}, group key = {}"
+              .format(self.key_address, i, group_key))
+        tmp = self.key_server_client.transmit(group_key, self.sum_data[i])
+        # add group index for check
+        tmp.append(i)
+        q.put(tmp)
+        return
+
+    def multi_thread_trans(self):
+        q = Queue()
+        processes = []
+        rets = []
+
+        client_combinations = generate_all_combinations(self.num_clients)
+
+        for i in range(len(self.sum_data)):
+            t = Process(target=self.transmit, args=(q, i, client_combinations[i]))
+            processes.append(t)
+        for p in processes:
+            p.start()
+        for i in range(len(processes)):
+            ret = q.get()
+            rets.append(ret)
+        for p in processes:
+            p.join()
+
+        for group_ind in range(len(self.sum_data)):
+            for elem in rets:
+                if elem[-1] == group_ind:
+                    self.group_top_k.extend((elem[:-1]))
+
+        print("key server return shapley top-k, size {}".format(len(self.group_top_k)))
+        return self.group_top_k
 
     def sum_shapley(self, request, context):
 
@@ -81,12 +118,14 @@ class ShapleyScheduleServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
             self.sum_data.extend(fagin_summed_vector)
 
             # find top-k for each summed list
-            client_combinations = generate_all_combinations(self.num_clients)
-            for i in range(len(self.sum_data)):
-                cur_sum_list = self.sum_data[i]
-                top_k_ind = self.key_server_client.transmit(client_combinations[i], cur_sum_list)
-                self.group_top_k.extend(top_k_ind)
-                print("top-k items in group {}: {}".format(client_combinations[i], top_k_ind))
+            self.multi_thread_trans()
+
+            # client_combinations = generate_all_combinations(self.num_clients)
+            # for i in range(len(self.sum_data)):
+            #     cur_sum_list = self.sum_data[i]
+            #     top_k_ind = self.key_server_client.transmit(client_combinations[i], cur_sum_list)
+            #     self.group_top_k.extend(top_k_ind)
+            #     print("top-k items in group {}: {}".format(client_combinations[i], top_k_ind))
 
             sum_time = time.time() - sum_start
             self.sum_completed = True
@@ -128,7 +167,7 @@ class ShapleyScheduleServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
 def launch_server(address, key_address, num_clients, k, ctx_file):
     max_msg_size = 1000000000
     options = [('grpc.max_send_message_length', max_msg_size), ('grpc.max_receive_message_length', max_msg_size)]
-    servicer = ShapleyScheduleServer(address, key_address, num_clients, k, ctx_file)
+    servicer = ShapleyAggrKeyServer(address, key_address, num_clients, k, ctx_file)
     server = grpc.server(futures.ThreadPoolExecutor(), options=options)
     tenseal_shapley_data_pb2_grpc.add_ShapleyServiceServicer_to_server(servicer, server)
     server.add_insecure_port(address)

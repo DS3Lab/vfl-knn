@@ -12,10 +12,10 @@ from utils.distance import square_euclidean_np
 from utils.comm_op import gather
 from utils.fagin_utils import suggest_size, master_count_by_arr
 from utils.shapley_utils import generate_all_combinations
-from transmission.tenseal.tenseal_shapley_aggr_sche_client import ShapleyAggrScheClient
+from transmission.tenseal.tenseal_shapley_aggr_key_client import ShapleyAggrKeyClient
 
 
-class ShapleyFaginScheduleTrainer(object):
+class ShapleyFaginKeyTrainer(object):
 
     def __init__(self, args, data, targets):
         self.args = args
@@ -34,7 +34,7 @@ class ShapleyFaginScheduleTrainer(object):
         self.n_threads = 4
         self.n_servers = len(self.server_addrs)
 
-        self.clients = [ShapleyAggrScheClient(address, args) for address in self.server_addrs]
+        self.clients = [ShapleyAggrKeyClient(address, args) for address in self.server_addrs]
 
         self.shuffle_seed = 42
         random.seed(self.shuffle_seed)
