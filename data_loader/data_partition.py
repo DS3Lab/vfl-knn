@@ -654,7 +654,7 @@ def vertical_partition_higgs_with_label(in_file_name, dst_path, n_features, n_pa
         f.close()
 
 
-def load_higgs_part_with_label(file_name):
+def load_dummy_partition_with_label(file_name):
     f = open(file_name)
     data = []
     label = []

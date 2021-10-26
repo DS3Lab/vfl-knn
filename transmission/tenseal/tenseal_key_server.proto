@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message key_server_msg {
+  string group_key = 1;
+  int32 k = 2;
+  bytes msg = 3;
+}
+
+message top_k_key_server {
+  string group_key = 1;
+  repeated int32 ranking = 2;
+}
+
+service KeyServerService {
+  rpc find_top_k (key_server_msg) returns (top_k_key_server);
+}

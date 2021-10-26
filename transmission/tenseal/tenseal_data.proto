@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message encrypted {
+  //the following values correspond to
+  // - protobuf data type
+  // - name
+  // - numeric tag corresponding to the ordering in which the fields are serialized
+  int32 client_rank = 1;
+  bytes msg = 2;
+}
+
+service SafeTransmission {
+  rpc sum_encrypted (encrypted) returns (encrypted);
+}

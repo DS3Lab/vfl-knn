@@ -21,10 +21,10 @@ def count_by_dict(lists, count_map, cur_top_k, n_k):
     return
 
 
-def count_by_arr_old(lists, count_arr, cur_top_k, n_k):
+def master_count_by_arr(lists, count_arr, cur_top_k, n_k):
     n_list = len(lists)
     n_item = lists[0].shape[0]
-    #print("number of list = {}, number of items = {}".format(n_list, n_item))
+    # print("number of list = {}, number of items = {}".format(n_list, n_item))
     for i in range(n_item):
         for j in range(n_list):
             nid = lists[j][i]
@@ -38,28 +38,20 @@ def count_by_arr_old(lists, count_arr, cur_top_k, n_k):
     return
 
 
-def count_by_arr(lists, count_arr, cur_top_k, n_k):
-    #problem with n_list
-    n_list = len(lists) - 1 # We remove list from server
+def coordinator_count_by_arr(lists, count_arr, cur_top_k, n_k):
+    n_list = len(lists) - 1     # rank 0 is coordinator
     n_item = lists[0].shape[0]
 
-    #print("number of list n_list = {}, number of items n_item = {}".format(n_list, n_item))
+    # print("number of lists = {}, number of items = {}".format(n_list, n_item))
     for i in range(n_item):
-        for j in range(1,n_list+1): # we start at one so we do not take into consideration list from rank 0
-                                    # Also we go to n+1 since we need to check last list
-            #Problem here, if we keep encrypted ind, it will be difficult to compare
+        for j in range(1, n_list + 1):  # start at 1, do not take into consideration rank 0
             nid = lists[j][i]
-            #We try to access a value by passing an encrypted valie
             cur_count = count_arr[nid]
-            #print("for nid: {} we have count: {}".format(nid,cur_count))
             if cur_count == n_list - 1:
                 cur_top_k.append(nid)
                 if len(cur_top_k) == n_k:
                     return
             else:
-                # Even with Dict we cannot to that because encryption is not bijective
-                #ATTENTION: we need to know ID in order to increase count
-                # But to clients we will only send top-k ids and no more. Can it work?
                 count_arr[nid] = cur_count + 1
     return
 
@@ -102,19 +94,25 @@ def count_by_arr_kmeans(lists, count_arr, cur_top_k, n_k):
                     count_arr[nid] = cur_count + 1
     return
 
+
 def createLookUpTable(dataSize, seed):
     random.seed(seed)
     return np.array(random.sample(range(dataSize), dataSize))
 
+
 def get_shuffled_ind(ind, lookUpTable):
     return np.array(lookUpTable[ind])
+
 
 def find(target, myList):
     for i in range(len(myList)):
         if myList[i] == target:
             return i
+
+
 def get_real_ind(shuffled, lookUpTable):
     return list(map(lambda x: find(x, lookUpTable), shuffled))
+
 
 def count_lists3(lists):
     flat_lists = np.asarray(lists).flat
@@ -129,3 +127,5 @@ def suggest_size(n_data, k, n_list):
 if __name__ == "__main__":
     arr = np.asarray([1,2,3,4,5])
     print(np.where(arr == 1))
+    pred_probs = np.array([[0.1, 0.9], [0.2, 0.8]])
+    print(pred_probs[:, 1])

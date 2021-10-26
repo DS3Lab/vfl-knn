@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+message client_shapley_msg {
+  //the following values correspond to
+  // - protobuf data type
+  // - name
+  // - numeric tag corresponding to the ordering in which the fields are serialized
+  int32 client_rank = 1;
+  int32 k = 2;
+  bytes msg = 3;
+}
+
+message top_k {
+  int32 client_rank = 1;
+  repeated int32 ranking = 2;
+}
+
+service ShapleyService {
+  rpc sum_shapley (client_shapley_msg) returns (top_k);
+}
