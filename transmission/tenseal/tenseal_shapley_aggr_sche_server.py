@@ -115,13 +115,17 @@ class ShapleyAggrScheServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
 
         # sum encrypted vector
         sum_time = 0
+        sche_server_time = 0
         if client_rank == self.num_clients - 1:
             sum_start = time.time()
             fagin_summed_vector = sum_all_combinations(self.sum_vectors)
             self.sum_data.extend(fagin_summed_vector)
+            sum_time = time.time() - sum_start
 
-            # find top-k for each summed list
+            # send to schedule servers to find top-k for each summed list
+            sche_server_start = time.time()
             self.multi_thread_trans()
+            sche_server_time = time.time() - sche_server_start
 
             # client_combinations = generate_all_combinations(self.num_clients)
             # for i in range(len(self.sum_data)):
@@ -130,7 +134,6 @@ class ShapleyAggrScheServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
             #     self.group_top_k.extend(top_k_ind)
             #     print("top-k items in group {}: {}".format(client_combinations[i], top_k_ind))
 
-            sum_time = time.time() - sum_start
             self.sum_completed = True
 
         sum_wait_start = time.time()
@@ -160,9 +163,10 @@ class ShapleyAggrScheServer(tenseal_shapley_data_pb2_grpc.ShapleyServiceServicer
             time.sleep(self.sleep_time)
 
         print(">>> server finish sum_shapley, cost {:.2f} s: deserialization {:.2f} s, "
-              "wait for requests {:.2f} s, sum {:.2f} s, wait for sum {:.2f} s, create response {:.2f} s"
+              "wait for requests {:.2f} s, sum {:.2f} s, comm with schedule servers  {:.2f} s, "
+              "wait for sum {:.2f} s, create response {:.2f} s"
               .format(time.time() - server_start, deser_time,
-                      wait_time, sum_time, sum_wait_time, response_time))
+                      wait_time, sum_time, sche_server_time, sum_wait_time, response_time))
 
         return response
 
