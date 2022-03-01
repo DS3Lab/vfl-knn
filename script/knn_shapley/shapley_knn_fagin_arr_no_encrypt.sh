@@ -8,18 +8,21 @@
 
 # for synthesis
 # ./shapley_knn_fagin_arr_no_encrypt.sh 5 50 2 5 10 /home/jiangjia/datasets/n100k_d50_c2_vertical/ bach03:24000 bach
-# ./shapley_knn_fagin_arr_no_encrypt.sh 5 50 2 5 10 /home/jiangjia/datasets/n1k_d50_c2_vertical/ bach03:24000 bach
-# ./shapley_knn_fagin_arr_no_encrypt.sh 5 50 2 3 10 /home/jiangjia/datasets/n1k_d50_c2_vertical/ bach03:24000 bach
+# ./shapley_knn_fagin_arr_no_encrypt.sh 5 50 2 5 10 /home/jiangjia/datasets/n1k_d50_c2_vertical/ bach03:24000 bach synthesis
+# ./shapley_knn_fagin_arr_no_encrypt.sh 5 50 2 3 10 /home/jiangjia/datasets/n1k_d50_c2_vertical/ bach03:24000 bach synthesis
+# ./shapley_knn_fagin_arr_no_encrypt.sh 8 50 2 3 10 /home/jiangjia/datasets/synthesis-vertical-8/ bach03:24000 bach synthesis
 
 # for Bank
 # ./shapley_knn_fagin_arr_no_encrypt.sh 4 8 2 5 320 /home/jiangjia/datasets/Bank-parts-label/ bach03:24000 bach
 # ./shapley_knn_fagin_arr_no_encrypt.sh 4 8 2 3 320 /home/jiangjia/datasets/Bank-parts-label/ bach03:24000 bach
+# ./shapley_knn_fagin_arr_no_encrypt.sh 8 8 2 3 320 /home/jiangjia/datasets/Bank-vertical-8/ bach03:24000 bach Bank
 
 # for G2-4/G2-128
-# ./shapley_knn_fagin_arr_no_encrypt.sh 4 4 2 5 205 /home/jiangjia/datasets/g2-4-100-vertical/ bach03:24000 bach
-# ./shapley_knn_fagin_arr_no_encrypt.sh 4 4 2 3 205 /home/jiangjia/datasets/g2-4-100-vertical/ bach03:24000 bach
-# ./shapley_knn_fagin_arr_no_encrypt.sh 5 128 2 5 205 /home/jiangjia/datasets/g2-128-100-vertical/ bach03:24000 bach
-# ./shapley_knn_fagin_arr_no_encrypt.sh 5 128 2 3 205 /home/jiangjia/datasets/g2-128-100-vertical/ bach03:24000 bach
+# ./shapley_knn_fagin_arr_no_encrypt.sh 4 4 2 5 205 /home/jiangjia/datasets/g2-4-100-vertical/ bach03:24000 bach g2-4
+# ./shapley_knn_fagin_arr_no_encrypt.sh 4 4 2 3 205 /home/jiangjia/datasets/g2-4-100-vertical/ bach03:24000 bach g2-4
+# ./shapley_knn_fagin_arr_no_encrypt.sh 5 128 2 5 205 /home/jiangjia/datasets/g2-128-100-vertical/ bach03:24000 bach g2-128
+# ./shapley_knn_fagin_arr_no_encrypt.sh 5 128 2 3 205 /home/jiangjia/datasets/g2-128-100-vertical/ bach03:24000 bach g2-128
+# ./shapley_knn_fagin_arr_no_encrypt.sh 8 128 2 3 205 /home/jiangjia/datasets/g2-128-100-vertical-8/ bach03:24000 bach g2-128
 
 # birch1/birch2
 # ./shapley_knn_fagin_arr_no_encrypt.sh 2 2 100 5 10000 /home/jiangjia/datasets/birch1-vertical/ bach03:24000 bach birch1
@@ -30,11 +33,12 @@
 # letter
 # ./shapley_knn_fagin_arr_no_encrypt.sh 4 16 26 5 2000 /home/jiangjia/datasets/letter-vertical/ bach03:24000 bach letter
 # ./shapley_knn_fagin_arr_no_encrypt.sh 4 16 26 3 2000 /home/jiangjia/datasets/letter-vertical/ bach03:24000 bach letter
+# ./shapley_knn_fagin_arr_no_encrypt.sh 8 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-8/ bach03:24000 bach letter
+# ./shapley_knn_fagin_arr_no_encrypt.sh 16 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-16/ bach03:24000 bach letter
 
 # unbalance
 # ./shapley_knn_fagin_arr_no_encrypt.sh 2 2 8 5 650 /home/jiangjia/datasets/unbalance-vertical/ bach03:24000 bach unbalance
 # ./shapley_knn_fagin_arr_no_encrypt.sh 2 2 8 3 650 /home/jiangjia/datasets/unbalance-vertical/ bach03:24000 bach unbalance
-
 
 world_size=$1
 n_features=$2

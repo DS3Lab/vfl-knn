@@ -4,13 +4,16 @@
 
 # synthesis, N=1K, D=50, C=2
 # ./shapley_lr_no_encrypt.sh 5 50 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/n1k_d50_c2_vertical/ bach03:24000 bach synthesis1K
+# ./shapley_lr_no_encrypt.sh 8 50 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/synthesis-vertical-8/ bach03:24000 bach synthesis1K
 
 # Bank, N=3200, D=8, C=2
 # ./shapley_lr_no_encrypt.sh 4 8 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/Bank-parts-label/ bach03:24000 bach bank
+# ./shapley_lr_no_encrypt.sh 8 8 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/Bank-vertical-8/ bach03:24000 bach bank
 
 # G2-4/G2-128, N=2048, D=4, C=2
 # ./shapley_lr_no_encrypt.sh 4 4 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/g2-4-100-vertical/ bach03:24000 bach G2-4
 # ./shapley_lr_no_encrypt.sh 5 128 2 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/g2-128-100-vertical/ bach03:24000 bach G2-128
+
 
 world_size=$1
 n_features=$2

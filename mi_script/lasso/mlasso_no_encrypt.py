@@ -1,4 +1,5 @@
 import time
+import sys
 
 import numpy as np
 import argparse
@@ -8,10 +9,11 @@ import torch.distributed as dist
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
 
-import sys
 sys.path.append("../../")
 from data_loader.data_partition import load_dummy_partition_with_label
-from tenseal_trainer.mlr import MLRTrainer
+from mi_trainer.lasso.mlasso_trainer_no_encrypt import LassoTrainer
+
+from utils.comm_op import gather
 
 
 def dist_is_initialized():
@@ -64,21 +66,21 @@ def run(args):
     train_Y_onehot = onehot_encoder.fit_transform(train_Y.reshape(-1, 1))
     test_Y_onehot = onehot_encoder.fit_transform(test_Y.reshape(-1, 1))
 
-    trainer = MLRTrainer(args)
+    trainer = LassoTrainer(args)
     train_start = time.time()
     epoch_loss_lst = []
-    loss_tol = 0.01
+    loss_tol = 0.001
     epoch_tol = 3  # loss should decrease in ${epoch_tol} epochs
-    for epoch_idx in range(args.n_epochs):
-        print(">>> epoch [{}] start".format(epoch_idx))
+    for i in range(args.n_epochs):
+        print(">>> epoch [{}] start".format(i))
         epoch_start = time.time()
         epoch_loss = 0.
-        for batch_idx in range(n_batches):
-            start = batch_idx * batch_size
-            end = (batch_idx + 1) * batch_size if batch_idx < n_batches - 1 else n_train
+        for j in range(n_batches):
+            start = j * batch_size
+            end = (j + 1) * batch_size if j < n_batches - 1 else n_train
             batch_X = train_X[start:end]
             batch_Y = train_Y_onehot[start:end]
-            batch_loss = trainer.one_iteration(epoch_idx, batch_idx, batch_X, batch_Y)
+            batch_loss = trainer.one_iteration(i, j, batch_X, batch_Y)
             epoch_loss += batch_loss
         epoch_train_time = time.time() - epoch_start
 
@@ -89,7 +91,7 @@ def run(args):
         epoch_test_time = time.time() - test_start
         print(">>> epoch[{}] finish, train loss {:.6f}, cost {:.2f} s, train cost {:.2f} s, test cost {:.2f} s, "
               "accuracy = {:.6f}, auc = {:.6f}"
-              .format(epoch_idx, epoch_loss, time.time() - epoch_start, epoch_train_time, epoch_test_time, accuracy, auc))
+              .format(i, epoch_loss, time.time() - epoch_start, epoch_train_time, epoch_test_time, accuracy, auc))
 
         epoch_loss_lst.append(epoch_loss)
         if len(epoch_loss_lst) > epoch_tol \
@@ -99,6 +101,13 @@ def run(args):
             break
 
     print(">>> task finish, cost {:.2f} s".format(time.time() - run_start))
+
+    print("local weight = {}".format(trainer.W))
+    local_importance = np.sum(trainer.W)
+    global_importance = np.asarray(gather(np.asarray(local_importance)))
+    print("importance of clients: {}".format(global_importance.tolist()))
+    sort_ind = np.argsort(global_importance)[::-1]
+    print("ranking of clients: {}".format(sort_ind.tolist()))
 
 
 N_FEATURES = 28
@@ -124,7 +133,6 @@ def main():
     parser.add_argument('-r', '--rank', type=int, default=0, help='Rank of the current process.')
     parser.add_argument('--no-cuda', action='store_true')
     parser.add_argument('--root', type=str, default='data')
-    parser.add_argument('--config', type=str, default='ts_ckks.config')
     parser.add_argument('--n-features', type=int, default=N_FEATURES)
     parser.add_argument('--n-classes', type=int, default=N_CLASSES)
     parser.add_argument('--n-epochs', type=int, default=N_EPOCHS)

@@ -26,7 +26,10 @@
 # ./knn_allreduce.sh 2 2 100 5 10000 /home/jiangjia/datasets/birch2-vertical/ ts_ckks.config bach03:24000 bach birch2
 
 # letter, N=20K, D=16, C=26
-# ./knn_allreduce.sh 4 16 26 5 2000 /home/jiangjia/datasets/letter-vertical/ ts_ckks.config bach03:24000 bach letter
+# ./knn_allreduce.sh 4 16 26 3 2000 /home/jiangjia/datasets/letter-vertical/ ts_ckks.config bach03:24000 bach letter
+# ./knn_allreduce.sh 2 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-2/ ts_ckks.config bach03:24000 bach letter
+# ./knn_allreduce.sh 8 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-8/ ts_ckks.config bach03:24000 bach letter
+# ./knn_allreduce.sh 16 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-16/ ts_ckks.config bach03:24000 bach letter
 
 # unbalance, N=6500, D=2, C=8
 # ./knn_allreduce.sh 2 2 8 5 650 /home/jiangjia/datasets/unbalance-vertical/ ts_ckks.config bach03:24000 bach unbalance

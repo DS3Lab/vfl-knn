@@ -160,10 +160,10 @@ def load_part_with_label(file_name):
 
 
 if __name__ == "__main__":
-    # file_name = "cod-rna.txt"
-    # out_dir = "cod-rna-vertical"
-    # vertical_partition_libsvm_with_label(file_name, out_dir, 8, 4)
+    file_name = "/Users/jiawei/Downloads/VFL-KNN/synthesis/n1k_d50_c2.libsvm"
+    out_dir = "/Users/jiawei/Downloads/VFL-KNN/synthesis//synthesis-vertical-3/"
+    vertical_partition_libsvm_with_label(file_name, out_dir, 50, 3)
 
-    file_name = "unbalance-all.csv"
-    out_dir = "unbalance-vertical"
-    vertical_partition_csv_with_label(file_name, out_dir, 2, 2)
+    # file_name = "letter-all.csv"
+    # out_dir = "letter-vertical-16"
+    # vertical_partition_csv_with_label(file_name, out_dir, 16, 16)

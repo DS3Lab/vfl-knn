@@ -7,12 +7,10 @@ import numpy as np
 from utils.comm_op import sum_all_reduce
 
 
-class ShapleyLRTrainer(object):
+class LassoTrainer(object):
 
-    def __init__(self, args, group_flags):
+    def __init__(self, args):
         self.args = args
-        self.group_flags = group_flags
-        self.is_attend = self.group_flags[self.args.rank]
 
         # average number of features in one part
         self.n_f = self.args.n_features // self.args.world_size
@@ -22,7 +20,7 @@ class ShapleyLRTrainer(object):
         # local feature range
         self.start_f = self.args.rank * self.n_f
         self.end_f = min(self.args.n_features, (self.args.rank + 1) * self.n_f)
-        #print("local features range = [{},{})".format(self.start_f, self.end_f))
+        print("local features range = [{},{})".format(self.start_f, self.end_f))
 
         # init local weight
         self.W = np.random.rand(self.end_f - self.start_f)
@@ -54,49 +52,46 @@ class ShapleyLRTrainer(object):
         np.set_printoptions(precision=4)
         np.set_printoptions(threshold=2)
 
-        partial_Z = X @ self.W if self.is_attend == 1 else np.zeros(X.shape[0])
+        partial_Z = X @ self.W
         # print("partial dot = {}".format(partial_dot))
         comm_dot_start = time.time()
         Z = sum_all_reduce(partial_Z)
         comm_time = time.time() - comm_dot_start
 
-        #if self.is_attend == 1:
         h = self.sigmoid(Z)
         grads = (X.T * (h - Y)).T
-        grad = np.mean(grads, axis=0) + self.args.lam * self.W
+        grad = np.mean(grads, axis=0) + self.args.lam * np.sign(self.W)
 
         # Vanilla SGD
-        #cur_lr = self.args.lr * math.pow(0.9, n_epoch)
-        #self.weight = self.weight - cur_lr * grad
+        cur_lr = self.args.lr * math.pow(0.9, n_epoch)
+        self.W = self.W - self.args.lr * grad
 
         # Adam
-        self.update_adam(grad)
-        m_hat = self.m / (1 - math.pow(self.beta1, self.n_step))
-        self.W = self.W - self.adam_lr * m_hat
+        # self.update_adam(grad)
+        # m_hat = self.m / (1 - math.pow(self.beta1, self.n_step))
+        # self.W = self.W - self.adam_lr * m_hat
+
+        loss = np.average(- Y * np.log(h) - (1 - Y) * np.log(1 - h))
 
         # sum regularization
-        partial_reg = np.linalg.norm(self.W, 2) if self.is_attend == 1 else 0.0
+        partial_reg = np.linalg.norm(self.W, 1)
         comm_reg_start = time.time()
         global_reg = sum_all_reduce(np.asarray(partial_reg))
         comm_time += time.time() - comm_reg_start
 
-        loss = np.average(- Y * np.log(h) - (1 - Y) * np.log(1 - h)) \
-            if self.is_attend == 1 else 0.0
-        global_loss = sum_all_reduce(np.asarray(loss)) / self.args.world_size
-        global_loss += self.args.lam / 2. * global_reg
-
+        loss += self.args.lam / 2. * global_reg
         iter_time = time.time() - start_time
 
-        #print("iteration[{}] finish, cost {:.2f} s, comm cost {:.2f} s, "
-        #      "attend = {}, grad = {}, loss = {:.6f}, weight = {}"
-        #      .format(n_iter, iter_time, comm_time, self.is_attend, grad, global_loss, self.W))
+        print("iteration[{}] finish, cost {:.2f} s, comm cost {:.2f} s, "
+              "grad = {}, loss = {:.6f}, weight = {}"
+              .format(n_iter, iter_time, comm_time, grad, loss, self.W))
 
-        return global_loss
+        return loss
 
     def predict_one(self, X):
         start_time = time.time()
 
-        partial_Z = X @ self.W if self.is_attend == 1 else 0.0
+        partial_Z = X @ self.W
         comm_dot_start = time.time()
         Z = sum_all_reduce(np.asarray(partial_Z))
         comm_time = time.time() - comm_dot_start
@@ -109,7 +104,7 @@ class ShapleyLRTrainer(object):
     def predict(self, X):
         start_time = time.time()
 
-        partial_Z = X @ self.W if self.is_attend == 1 else np.zeros(X.shape[0])
+        partial_Z = X @ self.W
         comm_dot_start = time.time()
         Z = sum_all_reduce(partial_Z)
         comm_time = time.time() - comm_dot_start
@@ -121,8 +116,6 @@ class ShapleyLRTrainer(object):
 
 
 if __name__ == '__main__':
-    a = np.asarray(([1, 2], [3, 4]))
+    a = np.asarray([1, 2])
     b = np.asarray([3, 4])
-    #print(a * b)
-    print(a @ b)
-    print((a @ b).shape)
+    print(a * b)

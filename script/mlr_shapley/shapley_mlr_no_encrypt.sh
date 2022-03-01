@@ -13,6 +13,7 @@
 # letter, N=20K, D=16, C=26
 # ./shapley_mlr_no_encrypt.sh 4 16 26 1 1800 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical/ bach03:24000 bach letter
 # ./shapley_mlr_no_encrypt.sh 4 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical/ bach03:24000 bach letter
+# ./shapley_mlr_no_encrypt.sh 8 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical-8/ bach03:24000 bach letter
 
 # unbalance, N=6500, D=2, C=8
 # ./shapley_mlr_no_encrypt.sh 2 2 8 100 585 0.1 0.1 0.01 /home/jiangjia/datasets/unbalance-vertical/ bach03:24000 bach unbalance

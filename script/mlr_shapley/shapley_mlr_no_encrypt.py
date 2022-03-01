@@ -101,7 +101,7 @@ def run(args):
         epoch_tol = 3  # loss should decrease in ${epoch_tol} epochs
         accuracy, auc = 0.0, 0.0
         for epoch_idx in range(args.n_epochs):
-            print(">>> epoch [{}] start".format(epoch_idx))
+            #print(">>> epoch [{}] start".format(epoch_idx))
             epoch_start = time.time()
             epoch_loss = 0.
             for batch_idx in range(n_batches):
@@ -118,9 +118,9 @@ def run(args):
             accuracy = accuracy_score(test_Y, pred_targets)
             auc = roc_auc_score(test_Y, pred_probs, multi_class="ovr")
             epoch_test_time = time.time() - test_start
-            print(">>> epoch[{}] finish, train loss {:.6f}, cost {:.2f} s, train cost {:.2f} s, test cost {:.2f} s, "
-                  "accuracy = {:.6f}, auc = {:.6f}"
-                  .format(epoch_idx, epoch_loss, time.time() - epoch_start, epoch_train_time, epoch_test_time, accuracy, auc))
+            #print(">>> epoch[{}] finish, train loss {:.6f}, cost {:.2f} s, train cost {:.2f} s, test cost {:.2f} s, "
+            #      "accuracy = {:.6f}, auc = {:.6f}"
+            #      .format(epoch_idx, epoch_loss, time.time() - epoch_start, epoch_train_time, epoch_test_time, accuracy, auc))
             epoch_loss_lst.append(epoch_loss)
             if epoch_idx >= 9 and len(epoch_loss_lst) > epoch_tol \
                     and min(epoch_loss_lst[:-epoch_tol]) - min(epoch_loss_lst[-epoch_tol:]) < loss_tol:
@@ -137,9 +137,13 @@ def run(args):
     print("calculate utility cost {:.2f} s, total round {}, total epochs {}"
           .format(time.time() - utility_start, n_utility_round, n_utility_epochs))
 
+    group_acc_sum = [0 for _ in range(args.world_size)]
     for group_key in range(start_key, end_key + 1):
         group_flags = utility_key_to_groups(group_key, world_size)
+        n_participant = sum(group_flags)
+        group_acc_sum[n_participant - 1] += utility_value[group_key]
         print("group {}, accuracy = {}".format(group_flags, utility_value[group_key]))
+    print("accuracy sum of different size: {}".format(group_acc_sum))
 
     # cal factorial
     factor = [1] * args.world_size

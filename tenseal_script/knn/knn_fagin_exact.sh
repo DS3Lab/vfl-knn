@@ -27,6 +27,9 @@
 
 # letter, N=20K, D=16, C=26
 # ./knn_fagin_exact.sh 5 16 26 5 2000 /home/jiangjia/datasets/letter-vertical/ ts_ckks.config bach03:24000 bach letter
+# ./knn_fagin_exact.sh 3 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-2/ ts_ckks.config bach03:24000 bach letter
+# ./knn_fagin_exact.sh 9 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-8/ ts_ckks.config bach03:24000 bach letter
+# ./knn_fagin_exact.sh 17 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-16/ ts_ckks.config bach03:24000 bach letter
 
 # unbalance, N=6500, D=2, C=8
 # ./knn_fagin_exact.sh 3 2 8 5 650 /home/jiangjia/datasets/unbalance-vertical/ ts_ckks.config bach03:24000 bach unbalance
@@ -47,7 +50,7 @@ home_path="/home/jiangjia/"
 env_path="${home_path}/virtualenvs/pytorch-euler/bin/activate"
 code_path="${home_path}/code/vfl-knn/tenseal_script/knn/"
 
-machines=( 03 04 06 07 08 )
+machines=( 03 04 06 07 08 09 10 )
 
 rank=0
 

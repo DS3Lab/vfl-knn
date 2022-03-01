@@ -9,6 +9,9 @@
 # letter, N=20K, D=16, C=26
 # ./mlr_encrypt.sh 4 16 26 100 1800 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical/ ts_ckks.config bach03:24000 bach letter
 # ./mlr_encrypt.sh 4 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical/ ts_ckks.config bach03:24000 bach letter
+# ./mlr_encrypt.sh 2 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical-2/ ts_ckks.config bach03:24000 bach letter
+# ./mlr_encrypt.sh 8 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical-8/ ts_ckks.config bach03:24000 bach letter
+# ./mlr_encrypt.sh 16 16 26 100 256 0.1 0.1 0.01 /home/jiangjia/datasets/letter-vertical-16/ ts_ckks.config bach03:24000 bach letter
 
 # unbalance, N=6500, D=2, C=8
 # ./mlr_encrypt.sh 2 2 8 100 585 0.1 0.1 0.01 /home/jiangjia/datasets/unbalance-vertical/ ts_ckks.config bach03:24000 bach unbalance

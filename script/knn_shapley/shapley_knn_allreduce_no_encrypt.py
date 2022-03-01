@@ -9,7 +9,7 @@ import torch
 import torch.distributed as dist
 from sklearn.metrics import accuracy_score, roc_auc_score
 
-sys.path.append("../")
+sys.path.append("../../")
 from data_loader.data_partition import load_dummy_partition_with_label
 from trainer.knn_shapley.shapley_allreduce_trainer_no_encrypt import AllReduceTrainer
 
@@ -94,7 +94,7 @@ def run(args):
         test_start = time.time()
 
         for i in range(args.n_test):
-            print(">>>>>> test[{}] <<<<<<".format(i))
+            #print(">>>>>> test[{}] <<<<<<".format(i))
             one_test_start = time.time()
             cur_test_data = test_data[i]
             cur_test_target = test_targets[i]
@@ -106,8 +106,8 @@ def run(args):
 
             one_test_time = time.time() - one_test_start
 
-            print("one test finish: target = {}, prediction = {}, cost {} s"
-                  .format(cur_test_target, pred_target, one_test_time))
+            #print("one test finish: target = {}, prediction = {}, cost {} s"
+            #      .format(cur_test_target, pred_target, one_test_time))
 
         print("test {} data cost {} s".format(args.n_test, time.time() - test_start))
         #print("targets = {}".format(true_targets))
@@ -118,13 +118,20 @@ def run(args):
         # auc = roc_auc_score(true_targets, np.array(pred_probs)[:, 1])
         # multi-class
         auc = roc_auc_score(true_targets, np.array(pred_probs), multi_class="ovr")
-        print("accuracy = {}".format(accuracy))
-        print("auc = {}".format(auc))
+        print("accuracy = {}, auc = {}".format(accuracy, auc))
 
         utility_value[group_key] = accuracy
         n_utility_round += 1
 
     print("calculate utility cost {:.2f} s, total round {}".format(time.time() - utility_start, n_utility_round))
+
+    group_acc_sum = [0 for _ in range(args.world_size)]
+    for group_key in range(start_key, end_key + 1):
+        group_flags = utility_key_to_groups(group_key, world_size)
+        n_participant = sum(group_flags)
+        group_acc_sum[n_participant - 1] += utility_value[group_key]
+        print("group {}, accuracy = {}".format(group_flags, utility_value[group_key]))
+    print("accuracy sum of different size: {}".format(group_acc_sum))
 
     # cal factorial
     factor = [1] * args.world_size

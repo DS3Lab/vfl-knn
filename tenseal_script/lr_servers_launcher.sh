@@ -22,6 +22,9 @@
 
 # letter, N=20K, D=16, C=26
 # ./lr_servers_launcher.sh 4 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 5 2000 1 bach
+# ./lr_servers_launcher.sh 2 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 2000 1 bach
+# ./lr_servers_launcher.sh 8 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 2000 1 bach
+# ./lr_servers_launcher.sh 16 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 2000 1 bach
 
 # unbalance, N=6500, D=2, C=8
 # ./lr_servers_launcher.sh 2 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config unbalance 5 6500 1 bach

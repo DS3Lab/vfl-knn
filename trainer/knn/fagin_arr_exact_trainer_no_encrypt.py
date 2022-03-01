@@ -103,7 +103,7 @@ class FaginArrTrainer(object):
         if rank == 0:
             candidate_ind = [i for i, e in enumerate(counts) if e > 0]
             n_candidate = len(candidate_ind)
-            print("top-k candidates = {}".format(candidate_ind))
+            #print("top-k candidates = {}".format(candidate_ind))
             print("number of candidates = {}".format(n_candidate))
             dist.broadcast(torch.tensor(n_candidate), 0)
             dist.broadcast(torch.tensor(candidate_ind, dtype=torch.int32), 0)
@@ -111,11 +111,10 @@ class FaginArrTrainer(object):
             tmp_tensor = torch.tensor(0)
             dist.broadcast(tmp_tensor, 0)
             n_candidate = tmp_tensor.item()
-            print("number of candidates = {}".format(n_candidate))
             tmp_tensor = torch.zeros([n_candidate], dtype=torch.int32)
             dist.broadcast(tmp_tensor, 0)
             candidate_ind = tmp_tensor.tolist()
-            print("top-k candidates = {}".format(candidate_ind))
+            #print("top-k candidates = {}".format(candidate_ind))
             print("number of candidates = {}".format(n_candidate))
         candidate_time = time.time() - candidate_start
 
@@ -123,7 +122,7 @@ class FaginArrTrainer(object):
 
         # encrypt distance
         encrypt_start = time.time()
-        time.sleep(PER_ENCRYPT_TIME * n_candidate)
+        #time.sleep(PER_ENCRYPT_TIME * n_candidate)
         encrypt_time = time.time() - encrypt_start
 
         # comm candidate distance

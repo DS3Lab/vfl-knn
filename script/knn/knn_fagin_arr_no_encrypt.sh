@@ -23,7 +23,10 @@
 # ./knn_fagin_arr_no_encrypt.sh 2 2 100 5 10000 /home/jiangjia/datasets/birch2-vertical/ bach03:24000 bach birch2
 
 # letter, N=20K, D=16, C=26
-# ./knn_fagin_arr_no_encrypt.sh 4 16 26 5 2000 /home/jiangjia/datasets/letter-vertical/ bach11:24000 bach letter
+# ./knn_fagin_arr_no_encrypt.sh 4 16 26 3 2000 /home/jiangjia/datasets/letter-vertical/ bach03:24000 bach letter
+# ./knn_fagin_arr_no_encrypt.sh 2 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-2/ bach03:24000 bach letter
+# ./knn_fagin_arr_no_encrypt.sh 8 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-8/ bach03:24000 bach letter
+# ./knn_fagin_arr_no_encrypt.sh 16 16 26 3 2000 /home/jiangjia/datasets/letter-vertical-16/ bach02:24000 bach letter
 
 # unbalance, N=6500, D=2, C=8
 # ./knn_fagin_arr_no_encrypt.sh 2 2 8 5 650 /home/jiangjia/datasets/unbalance-vertical/ bach03:24000 bach unbalance

@@ -23,7 +23,10 @@
 # ./servers_launcher.sh 2 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config birch2 5 10000 1 bach
 
 # letter, N=20K, D=16, C=26
-# ./servers_launcher.sh 4 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 5 20000 1 bach
+# ./servers_launcher.sh 4 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 20000 1 bach
+# ./servers_launcher.sh 2 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 20000 1 bach
+# ./servers_launcher.sh 8 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 20000 1 bach
+# ./servers_launcher.sh 16 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config letter 3 20000 1 bach
 
 # unbalance, N=6500, D=2, C=8
 # ./servers_launcher.sh 2 /home/jiangjia/code/vfl-knn/tenseal_script/ts_ckks.config unbalance 5 6500 1 bach
@@ -63,7 +66,7 @@ for port in "${ports[@]}"; do
     node_name=${cluster_name}$i
     #address="${node_name}.ethz.ch:${port}"
     address="${node_name}:${port}"
-    dir_path="${home_path}/logs/vfl-knn/server/tenseal_${dataset}_k${k}_t${n_test}/"
+    dir_path="${home_path}/logs/vfl-knn/server/tenseal_${dataset}_w${n_clients}_k${k}_t${n_test}/"
     log_path="${dir_path}${i}_${port}.log"
     [ "$server_count" -eq 0 ] && echo "creating log dir" && rm -rf $dir_path && mkdir -p $dir_path && rm -rf $log_path
     echo $node_name "source $env_path; cd $code_path; nohup python3 -u tenseal_server.py $address $n_clients $config > $log_path 2>&1 &"

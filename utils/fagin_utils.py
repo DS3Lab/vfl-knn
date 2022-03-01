@@ -38,6 +38,22 @@ def master_count_by_arr(lists, count_arr, cur_top_k, n_k):
     return
 
 
+def master_count_label(lists, count_arr, cur_top_k, n_k, targets, cur_label):
+    n_list = len(lists)
+    n_item = lists[0].shape[0]
+    # print("number of list = {}, number of items = {}".format(n_list, n_item))
+    for i in range(n_item):
+        for j in range(n_list):
+            nid = lists[j][i]
+            cur_count = count_arr[nid]
+            if cur_count == n_list - 1 and targets[nid] == cur_label:
+                cur_top_k.append(nid)
+                if len(cur_top_k) == n_k:
+                    return
+            count_arr[nid] = cur_count + 1
+    return
+
+
 def coordinator_count_by_arr(lists, count_arr, cur_top_k, n_k):
     n_list = len(lists) - 1     # rank 0 is coordinator
     n_item = lists[0].shape[0]

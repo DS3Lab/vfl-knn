@@ -75,9 +75,9 @@ def run(args):
     print("======finish======")
     print("test {} data cost {:.4f} s, avg # candidate = {}"
           .format(args.n_test, time.time() - test_start, int(trainer.n_total_fagin_cand / args.n_test)))
-    print("targets = {}".format(true_targets))
-    print("predictions = {}".format(pred_targets))
-    print("pred probs = {}".format(pred_probs))
+    #print("targets = {}".format(true_targets))
+    #print("predictions = {}".format(pred_targets))
+    #print("pred probs = {}".format(pred_probs))
     print("accuracy = {}".format(accuracy_score(true_targets, pred_targets)))
     # two-class
     print("auc = {}".format(roc_auc_score(true_targets, np.array(pred_probs)[:, 1])))
