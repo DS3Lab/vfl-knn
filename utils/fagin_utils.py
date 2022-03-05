@@ -54,11 +54,36 @@ def master_count_label(lists, count_arr, cur_top_k, n_k, targets, cur_label):
     return
 
 
+def num_cur_label(cur_ids, targets, cur_label):
+    cur_label_ids = []
+    for nid in cur_ids:
+        if targets[nid] == cur_label:
+            cur_label_ids.append(nid)
+    return
+
+
 def coordinator_count_by_arr(lists, count_arr, cur_top_k, n_k):
     n_list = len(lists) - 1     # rank 0 is coordinator
     n_item = lists[0].shape[0]
 
     # print("number of lists = {}, number of items = {}".format(n_list, n_item))
+    for i in range(n_item):
+        for j in range(1, n_list + 1):  # start at 1, do not take into consideration rank 0
+            nid = lists[j][i]
+            cur_count = count_arr[nid]
+            if cur_count == n_list - 1:
+                cur_top_k.append(nid)
+                if len(cur_top_k) == n_k:
+                    return
+            else:
+                count_arr[nid] = cur_count + 1
+    return
+
+
+def fagin_server_count(lists, count_arr, cur_top_k, n_k):
+    n_list = len(lists) - 1     # rank 0 is fagin server
+    n_item = lists[0].shape[0]
+
     for i in range(n_item):
         for j in range(1, n_list + 1):  # start at 1, do not take into consideration rank 0
             nid = lists[j][i]

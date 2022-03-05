@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message mi_sche_msg {
+  string group_key = 1;
+  int32 k = 2;
+  bytes msg = 3;
+}
+
+message mi_sche_top_k {
+  string group_key = 1;
+  repeated int32 ranking = 2;
+}
+
+service MIScheServerService {
+  rpc decrypt_sort (mi_sche_msg) returns (mi_sche_top_k);
+}

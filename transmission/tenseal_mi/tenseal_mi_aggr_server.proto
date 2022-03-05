@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message mi_aggr_msg {
+  //the following values correspond to
+  // - protobuf data type
+  // - name
+  // - numeric tag corresponding to the ordering in which the fields are serialized
+  int32 client_rank = 1;
+  int32 k = 2;
+  repeated int32 groups = 3;
+  bytes msg = 4;
+}
+
+message mi_aggr_top_k {
+  int32 client_rank = 1;
+  repeated int32 ranking = 2;
+}
+
+service MIAggrServerService {
+  rpc aggr_mi (mi_aggr_msg) returns (mi_aggr_top_k);
+}
