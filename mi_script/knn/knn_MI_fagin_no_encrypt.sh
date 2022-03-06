@@ -37,7 +37,6 @@
 # unbalance
 # ./knn_MI_fagin_no_encrypt.sh 2 2 8 3 650 /home/jiangjia/datasets/unbalance-vertical/ bach03:24000 bach unbalance
 
-ETHds3900506
 
 world_size=$1
 n_features=$2
